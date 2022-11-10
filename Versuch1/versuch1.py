@@ -1,6 +1,36 @@
 import csv
+import math
+
 import matplotlib.pyplot as plt
 import numpy as np
+import scipy
+
+
+def linregress(arr1, arr2):
+    # Convert to numpy array
+    nparr1 = np.asarray(arr1)
+    nparr2 = np.asarray(arr2)
+    return scipy.stats.linregress(nparr1, nparr2)
+
+
+def plotlinregress(narr1, narr2, lbl_x, lbl_y):
+    # Convert to numpy array
+    arr1 = np.asarray(narr1)
+    arr2 = np.asarray(narr2)
+
+    slope, intercept, r, p, stderr = linregress(arr1, arr2)
+    line = f'lineare Regressionslinie: y={slope:.2f}x+{intercept:.2f}'
+
+    # Punkte von Array und Reggressionslinie mit Legende plotten:
+    fig, ax = plt.subplots()
+    ax.plot(arr1, arr2, label='logarithmierte Daten')
+    ax.plot(arr1, intercept + slope * arr1, label=line)
+    ax.set_xlabel(lbl_x)
+    ax.set_ylabel(lbl_y)
+    ax.legend(facecolor='white')
+    plt.savefig('lineareAuswertung.png', dpi=227)
+    plt.show()
+
 
 start = 10
 steps = 3
@@ -38,22 +68,6 @@ while i <= end:
 
     i = i + steps
 
-
-fig, ax = plt.subplots(2, 1)
-#x = np.linspace(0, 8, 1000)
-
-#ax[0, 0].plot(x, np.sin(x), 'g') #row=0, col=0
-#ax[1, 0].plot(x, np.tan(x), 'k') #row=1, col=0
-
-# Plotten
-plt.subplot(1, 3, 1)
-plt.plot(avgarr, cm)
-plt.title("unlogged")
-plt.xlabel("Spannung (V)")
-plt.ylabel("Distanz (cm)")
-# plt.savefig('Unlogged.png', dpi=227)
-# plt.show()
-
 # Lineare Kennlinie
 cm_log = []
 volt_log = []
@@ -62,15 +76,21 @@ for i in range(len(cm)):
     cm_log.append(np.log(cm[i]))
     volt_log.append(np.log(avgarr[i]))
 
-# Plotten
-plt.subplot(1, 3, 3)
-plt.plot(volt_log, cm_log)
-plt.title("logged")
-plt.xlabel("Spannung log (V)")
-plt.ylabel("Distanz log (cm)")
+# nichtlineare Kennlinie
+y = []
+for x in avgarr:
+    y.append(pow(math.e, 2.87) * pow(x, -1.68))
 
+# plot Daten und nichtlineare Kennlinie
+fig, ax = plt.subplots()
+ax.plot(avgarr, cm, label='Daten')
+ax.plot(avgarr, y, label='nichtlineare Kennlinie')
+ax.set_xlabel("Spannung (V)")
+ax.set_ylabel("Distanz (cm)")
+ax.legend(facecolor='white')
 plt.savefig('auswertung.png', dpi=227)
-# plt.savefig('logged.png', dpi=227)
 plt.show()
 
-#fig.show()
+
+# plot lineare Kennlinie und logged Daten
+plotlinregress(volt_log, cm_log, "Spannung log (V)", "Distanz log (cm)")
