@@ -147,11 +147,11 @@ for i in range(10):
 
 whiteImageMean = pixelwiseMeanAndSave(whiteImagesGray, "Weissbild")
 whiteImageMean = subtractAndSaveAs(whiteImageMean, darkImageMean, "Weissbild")
-bildKontrastMaximiert(whiteImageMean, "Weißbildbild_kontrastmax")
+bildKontrastMaximiert(whiteImageMean, "Weißbild_kontrastmax")
 
 
 def weissbildNormieren(img):
-    return img
+    return img / np.mean(img)
 
 
 def divideAndSaveAs(img, whiteImg, filename):
