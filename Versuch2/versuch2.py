@@ -167,11 +167,28 @@ def divideAndSaveAs(img, whiteImg, filename):
 
     cv2.imwrite('{}.png'.format(filename), divImg)
     print("{}.png gespeichert".format(filename))
+    return divImg
 
 
 whiteImageNormiert = weissbildNormieren(whiteImageMean)
-divideAndSaveAs(grauwertkeil, whiteImageNormiert, "Dividiert")
+divGrauwertkeil = divideAndSaveAs(grauwertkeil, whiteImageNormiert, "Dividiert")
 
 # ---------------------------------------------------------
 # Teil 4
 # ---------------------------------------------------------
+ROI_number = 0
+yTop = 5
+yBottom = len(grauwertkeil) - 5
+subPicsMean = []
+subPicsStd = []
+i = 0
+while i < len(xValues):
+    ROI = divGrauwertkeil[yTop:yBottom, xValues[i]:xValues[i + 1]]
+    subPicsMean.append(np.mean(ROI))
+    subPicsStd.append(np.std(ROI, ddof=1))
+    cv2.imwrite('SubPicCorrected_{}.png'.format(ROI_number), ROI)
+    ROI_number += 1
+    i += 2
+
+print("Mittelwerte SubPics nach Korrektur:\n{}".format(subPicsMean))
+print("Standardabweichung SubPics nach Korrektur:\n{}".format(subPicsStd))
