@@ -1,8 +1,10 @@
 import cv2
+import numpy
 import numpy as np
 
 image = cv2.imread('./Bilder/Grauwertkeil.png')
 grauwertkeil = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+grauwertkeil = grauwertkeil.astype(numpy.float32)
 
 # Aufbau der beiden Arrays: alle ungeraden Werte sind Startwerte eines Bereichs,
 # die geraden die zugehörigen Endwerte
@@ -63,22 +65,14 @@ while i < len(xValues):
 print("Mittelwerte SubPics:\n{}".format(subPicsMean))
 print("Standardabweichung SubPics:\n{}".format(subPicsStd))
 
-# for i in range(len(grauwertkeil[0])):
-#     print("Pixel {}: {}".format(i, grauwertkeil[0][i]))
-
-# print("X-Wert: " + str(len(grauwertkeil[0])))
-# print("Y-Wert: " + str(len(grauwertkeil)))
-
-# cv2.imshow('grauwertkeil', grauwertkeil)
-# cv2.waitKey(0)
 
 def bildKontrastMaximiert(img, filename):
-    imgCorrected = img
-    min = np.min(imgCorrected)
-    max = np.max(imgCorrected)
+    imgCorrected = np.zeros(shape=(len(img), len(img[0])))
+    min = np.min(img)
+    max = np.max(img)
     for i in range(480):
         for j in range(640):
-            imgCorrected[i][j] = imgCorrected[i][j] - min
+            imgCorrected[i][j] = img[i][j] - min
             if max > min:
                 imgCorrected[i][j] = imgCorrected[i][j] * (255 / (max - min))
             else:
@@ -86,7 +80,15 @@ def bildKontrastMaximiert(img, filename):
 
     cv2.imwrite('{}.png'.format(filename), imgCorrected)
     print("{}.png gespeichert".format(filename))
+
+    count = 0
+    for i in range(len(img)):
+        for j in range(len(img[0])):
+            if img[i][j] == imgCorrected[i][j]:
+                count += 1
+    print("Counter: {}".format(count))
     return imgCorrected
+
 
 # ---------------------------------------------------------
 # Teil 2
@@ -116,6 +118,7 @@ def pixelwiseMeanAndSave(arr, filename):
 
 darkImageMean = pixelwiseMeanAndSave(darkImagesGray, "Dunkelbild")
 bildKontrastMaximiert(darkImageMean, "Dunkelbild_kontrastmax")
+
 
 # print("DarkImageMean Array:\n{}".format(darkImageMean))
 # print("DarkImage Y: {}".format(len(darkImageMean)))
