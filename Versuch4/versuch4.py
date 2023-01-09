@@ -11,11 +11,11 @@ def main():
     # Teil 1 c)
     data = np.load("Recordings/Hoch1.npy")
     data = data[:100000]
-    #plotAndSave(fourierAufg3("Recordings/Hoch1.npy"), data, "Hoch1_Sample")
+    plotAndSave(fourierAufg3("Recordings/Hoch1.npy"), data, "Hoch1_Sample")
 
     # Teil 1 b)
     data = np.load("Recordings/Hoch1.npy")[:sampleFreq]
-    #plotAndSave(getSpectrum("Recordings/Hoch1.npy"), data, "Hoch1")
+    plotAndSave(getSpectrum("Recordings/Hoch1.npy"), data, "Hoch1")
 
     # Teil 2 a)
     refHoch = getAndPrintReferenzspektrum("Hoch")
@@ -44,7 +44,7 @@ def getSpectrum(file):
 
 def getWindows(arr, window_size):
     ret = []
-    gauss_window = np.array(signal.gaussian(512, 512 / 4))
+    gauss_window = np.array(signal.gaussian(512, 512/4))
 
     for i in range(0, len(arr) - window_size + 1, math.floor(window_size / 2)): # /2 weil zur Hälfte überlappen
         ret.append(np.concatenate(
@@ -81,20 +81,20 @@ def getAndPrintReferenzspektrum(name):
 
     spektrum = spektrum / 5
 
-    # f = []
-    # for index in range(0, len(spektrum), 1):
-    #     f.append(index)
-    # f = np.array(f)
-    #
-    # plt.title('Referenz ' + name)
-    # plt.ylabel('Amplitude')
-    # plt.xlabel('Frequenz (Hz)')
-    # plt.grid(True)
-    # plt.xlim(0, 1500)
-    # plt.gcf().subplots_adjust(left=0.15)
-    # plt.plot(f[:len(f) // 2], np.abs(spektrum[:len(spektrum) // 2]))
-    # plt.savefig("PNG/" + name + "_ref.png", dpi=900)
-    # plt.show()
+    f = []
+    for index in range(0, len(spektrum), 1):
+        f.append(index)
+    f = np.array(f)
+
+    plt.title('Referenz ' + name)
+    plt.ylabel('Amplitude')
+    plt.xlabel('Frequenz (Hz)')
+    plt.grid(True)
+    plt.xlim(0, 1500)
+    plt.gcf().subplots_adjust(left=0.15)
+    plt.plot(f[:len(f) // 2], np.abs(spektrum[:len(spektrum) // 2])) # in getSpektrum() einbauen
+    plt.savefig("PNG/" + name + "_ref.png", dpi=900)
+    plt.show()
 
     return spektrum
 
@@ -153,21 +153,21 @@ def spracherkenner(refHoch, refTief, refLinks, refRechts):
         # maximum.append(stats.pearsonr(np.real(refLinks), np.real(refLinks))[0])
         # maximum.append(stats.pearsonr(np.real(refRechts), np.real(refRechts))[0])
 
-        maximum.append(bravais_pearson(spec, refHoch))
-        maximum.append(stats.pearsonr(np.real(spec), np.real(refTief))[0])
-        maximum.append(stats.pearsonr(np.real(spec), np.real(refLinks))[0])
-        maximum.append(stats.pearsonr(np.real(spec), np.real(refRechts))[0])
+        # maximum.append(bravais_pearson(spec, refHoch))
+        # maximum.append(stats.pearsonr(np.real(spec), np.real(refTief))[0])
+        # maximum.append(stats.pearsonr(np.real(spec), np.real(refLinks))[0])
+        # maximum.append(stats.pearsonr(np.real(spec), np.real(refRechts))[0])
 
-        # maximum.append(stats.pearsonr(refHoch, refHoch)[0])
-        # maximum.append(stats.pearsonr(refTief, refTief)[0])
-        # maximum.append(stats.pearsonr(refLinks, refLinks)[0])
-        # maximum.append(stats.pearsonr(refRechts, refRechts)[0])
+        maximum.append(stats.pearsonr(spec, refHoch)[0])
+        maximum.append(stats.pearsonr(spec, refTief)[0])
+        maximum.append(stats.pearsonr(spec, refLinks)[0])
+        maximum.append(stats.pearsonr(spec, refRechts)[0])
 
-        print("maximum: " + str(np.max(maximum)))
-        print("maximum0: " + str(maximum[0]))
-        print("maximum1: " + str(maximum[1]))
-        print("maximum2: " + str(maximum[2]))
-        print("maximum3: " + str(maximum[3]))
+        # print("maximum: " + str(np.max(maximum)))
+        # print("maximum0: " + str(maximum[0]))
+        # print("maximum1: " + str(maximum[1]))
+        # print("maximum2: " + str(maximum[2]))
+        # print("maximum3: " + str(maximum[3]))
         if (np.max(maximum) == maximum[0]):
             print(n + " Phil: hoch")
         elif (np.max(maximum) == maximum[1]):
@@ -177,8 +177,6 @@ def spracherkenner(refHoch, refTief, refLinks, refRechts):
         elif (np.max(maximum) == maximum[3]):
             print(n + " Phil: rechts")
 
-        if 1 == 2:
-            print("Hallo")
 
     for n in names:
         spec = np.load("Recordings/M" + n + ".npy")[:19968]
